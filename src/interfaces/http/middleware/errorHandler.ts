@@ -1,37 +1,32 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
-/**
- * Custom Error class with status code
- */
-export class ApiError extends Error {
-  statusCode: number;
-  errorCode: number;
-
-  constructor(message: string, statusCode: number, errorCode?: number) {
-    super(message);
-    this.statusCode = statusCode;
-    this.errorCode = errorCode || statusCode;
-    Error.captureStackTrace(this, this.constructor);
-  }
+export interface CustomError extends Error {
+  statusCode?: number;
+  errorCode?: number;
 }
 
 /**
- * Global error handling middleware
+ * Global error handler middleware
  */
 export const errorHandler = (
-  err: Error | ApiError,
+  err: CustomError,
   _req: Request,
   res: Response,
   _next: NextFunction
 ): void => {
-  console.error("Error:", err);
+  console.error('Error:', err);
 
-  const statusCode = (err as ApiError).statusCode || 500;
-  const errorCode = (err as ApiError).errorCode || statusCode;
+  const statusCode = err.statusCode || 500;
+  const errorCode = err.errorCode || statusCode;
+  const message = err.message || 'Internal Server Error';
+
+  // In production, don't expose internal errors
+  const responseMessage =
+    process.env.NODE_ENV === 'production' && statusCode === 500 ? 'Internal Server Error' : message;
 
   res.status(statusCode).json({
     status: false,
-    message: err.message || "Internal Server Error",
-    errorCode,
+    message: responseMessage,
+    errorCode: errorCode
   });
 };

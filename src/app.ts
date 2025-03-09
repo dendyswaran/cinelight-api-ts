@@ -1,8 +1,12 @@
-import express, { Application, Request, Response, NextFunction } from "express";
-import cors from "cors";
-import helmet from "helmet";
-import { API_PREFIX } from "./infrastructure/config/constants";
-import { errorHandler } from "./interfaces/http/middleware/errorHandler";
+import { errorHandler } from '@interfaces/http/middleware/errorHandler';
+import cors from 'cors';
+import express, { Application, Request, Response } from 'express';
+import helmet from 'helmet';
+import config from './config';
+
+// Import routes
+import { setupAuthRoutes } from '@interfaces/http/routes/authRoutes';
+import { setupEquipmentRoutes } from '@interfaces/http/routes/equipmentRoutes';
 
 /**
  * Creates and configures an Express application
@@ -13,31 +17,33 @@ export const createApp = (): Application => {
 
   // Middlewares
   app.use(helmet());
-  app.use(cors());
+  app.use(cors(config.cors));
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
   // Health check
-  app.get("/health", (_req: Request, res: Response) => {
+  app.get('/health', (_req: Request, res: Response) => {
     res.status(200).json({
       status: true,
-      message: "Service is healthy",
+      message: 'Service is healthy',
       data: {
         uptime: process.uptime(),
-        timestamp: new Date(),
-      },
+        timestamp: new Date()
+      }
     });
   });
 
   // API Routes
-  // TODO: Add routes
+  setupAuthRoutes(app);
+  setupEquipmentRoutes(app);
+  // app.use(`${API_PREFIX}/quotations`, quotationRoutes);
 
   // 404 Handler
   app.use((_req: Request, res: Response) => {
     res.status(404).json({
       status: false,
-      message: "Resource not found",
-      errorCode: 404,
+      message: 'Resource not found',
+      errorCode: 404
     });
   });
 

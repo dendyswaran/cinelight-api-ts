@@ -4,8 +4,8 @@
   "description": "A TypeScript API for Cinelight with strict TypeScript and SOLID principles following clean architecture",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node -r tsconfig-paths/register dist/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
     "build": "tsc",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
@@ -15,7 +15,8 @@
     "migration:run": "npm run typeorm -- migration:run -d src/infrastructure/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/infrastructure/database/data-source.ts",
     "seed": "ts-node src/infrastructure/database/seeds/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "create:admin": "ts-node src/scripts/createAdminUser.ts"
   },
   "keywords": [],
   "author": "",
@@ -48,6 +49,7 @@
     "eslint": "^9.22.0",
     "prettier": "^3.5.3",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.8.2"
   }
 }

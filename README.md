@@ -1,21 +1,13 @@
-# Cinelight API (TypeScript)
+# Cinelight API
 
-A secure and maintainable TypeScript API built with clean architecture principles for the Cinelight quotation and inventory management system.
+A TypeScript API for Cinelight with strict TypeScript and SOLID principles following clean architecture.
 
 ## Features
 
-- Strict TypeScript configuration
-- Clean Architecture following SOLID principles
-- TypeORM with PostgreSQL integration
-- JWT Authentication
-- Comprehensive error handling
-- Secure API endpoints following OWASP guidelines
-
-## Requirements
-
-- Node.js 16+
-- PostgreSQL 12+
-- TypeScript 4.5+
+- Secure authentication with JWT
+- TypeScript strict mode
+- PostgreSQL database with TypeORM
+- Clean architecture implementation
 
 ## Project Structure
 
@@ -39,83 +31,83 @@ src/
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js (v16 or higher)
+- PostgreSQL (v12 or higher)
+
 ### Installation
 
 1. Clone the repository
-   ```bash
-   git clone https://github.com/dendyswaran/cinelight-api-ts.git
-   cd cinelight-api-ts
-   ```
+2. Install dependencies:
 
-2. Install dependencies
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Create a `.env` file (copy from `.env.example`)
-   ```bash
-   cp .env.example .env
-   ```
+3. Create a `.env` file in the root directory with the following content:
 
-4. Set up the database
-   ```bash
-   # Create a PostgreSQL database
-   createdb cinelight_dev
+```
+NODE_ENV=development
+PORT=3000
+API_PREFIX=/api/v1
 
-   # Run migrations
-   npm run migration:run
-   ```
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=cinelight_dev
 
-### Development
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=1d
 
-Start the development server with hot-reload:
+# Logging
+LOG_LEVEL=debug
+
+# CORS
+CORS_ORIGIN=*
+```
+
+4. Run database migrations:
+
+```bash
+npm run migration:run
+```
+
+5. Create an admin user:
+
+```bash
+npm run create:admin
+```
+
+This will create a user with the following credentials:
+- Username: admin
+- Password: admin
+
+### Running the Application
+
+Development mode:
+
 ```bash
 npm run dev
 ```
 
-### Build for Production
+Production mode:
 
-Build the project:
 ```bash
 npm run build
-```
-
-Start the production server:
-```bash
 npm start
 ```
 
-## API Response Format
+## API Endpoints
 
-### Success Response
-```json
-{
-  "status": true,
-  "message": "Operation successful",
-  "data": {
-    // Response data
-  }
-}
-```
+### Authentication
 
-### Error Response
-```json
-{
-  "status": false,
-  "message": "Error message",
-  "errorCode": 400
-}
-```
+- `POST /api/v1/auth/login` - Login with username and password
+- `GET /api/v1/auth/me` - Get current user (requires authentication)
 
-## Contributing
+## License
 
-1. Create feature branches from `main`
-2. Follow the established code style and architecture
-3. Run linting before committing
-   ```bash
-   npm run lint
-   ```
-4. Format code
-   ```bash
-   npm run format
-   ``` 
+ISC 

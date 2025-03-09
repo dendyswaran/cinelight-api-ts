@@ -1,7 +1,7 @@
-import "reflect-metadata";
-import dotenv from "dotenv";
-import { AppDataSource } from "./infrastructure/database/data-source";
-import { createApp } from "./app";
+import dotenv from 'dotenv';
+import 'reflect-metadata';
+import { createApp } from './app';
+import { DataSourceConfig } from './infrastructure/database/data-source';
 
 // Load environment variables
 dotenv.config();
@@ -13,8 +13,8 @@ const PORT = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     // Initialize database connection
-    await AppDataSource.initialize();
-    console.log("Database connection established");
+    await DataSourceConfig.initialize();
+    console.log('Database connection established');
 
     // Create Express application
     const app = createApp();
@@ -24,7 +24,7 @@ const startServer = async () => {
       console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Error starting server:", error);
+    console.error('Error starting server:', error);
     process.exit(1);
   }
 };
