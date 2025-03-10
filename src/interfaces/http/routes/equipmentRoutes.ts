@@ -7,6 +7,7 @@ import { EquipmentCategoryController } from '@interfaces/http/controllers/Equipm
 import { EquipmentController } from '@interfaces/http/controllers/EquipmentController';
 import { Application } from 'express';
 import { authenticateJwt } from '../middleware/auth';
+import { API_PREFIX } from '@infrastructure/config/constants';
 
 export const setupEquipmentRoutes = (app: Application) => {
   const dataSource = DataSourceConfig.getInstance();
@@ -24,14 +25,22 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @desc Get all equipment categories with pagination
    * @access Private
    */
-  app.get('/categories', authenticateJwt, categoryController.findAll.bind(categoryController));
+  app.get(
+    `${API_PREFIX}/equipment/categories`,
+    authenticateJwt,
+    categoryController.findAll.bind(categoryController)
+  );
 
   /**
    * @route GET /equipment/categories/:id
    * @desc Get a specific equipment category by ID
    * @access Private
    */
-  app.get('/categories/:id', authenticateJwt, categoryController.findById.bind(categoryController));
+  app.get(
+    `${API_PREFIX}/equipment/categories/:id`,
+    authenticateJwt,
+    categoryController.findById.bind(categoryController)
+  );
 
   /**
    * @route POST /equipment/categories
@@ -39,7 +48,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private (Admin only)
    */
   app.post(
-    '/categories',
+    `${API_PREFIX}/equipment/categories`,
     authenticateJwt,
     // requireRole(['admin']),
     categoryController.create.bind(categoryController)
@@ -51,7 +60,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private (Admin only)
    */
   app.put(
-    '/categories/:id',
+    `${API_PREFIX}/equipment/categories/:id`,
     authenticateJwt,
     // requireRole(['admin']),
     categoryController.update.bind(categoryController)
@@ -63,7 +72,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private (Admin only)
    */
   app.delete(
-    '/categories/:id',
+    `${API_PREFIX}/equipment/categories/:id`,
     authenticateJwt,
     // requireRole(['admin']),
     categoryController.delete.bind(categoryController)
@@ -75,7 +84,11 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @desc Get all equipment with pagination
    * @access Private
    */
-  app.get('/', authenticateJwt, equipmentController.findAll.bind(equipmentController));
+  app.get(
+    `${API_PREFIX}/equipment`,
+    authenticateJwt,
+    equipmentController.findAll.bind(equipmentController)
+  );
 
   /**
    * @route GET /equipment/category/:categoryId
@@ -83,7 +96,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private
    */
   app.get(
-    '/category/:categoryId',
+    `${API_PREFIX}/equipment/category/:categoryId`,
     authenticateJwt,
     equipmentController.findByCategory.bind(equipmentController)
   );
@@ -93,7 +106,11 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @desc Get a specific equipment by ID
    * @access Private
    */
-  app.get('/:id', authenticateJwt, equipmentController.findById.bind(equipmentController));
+  app.get(
+    `${API_PREFIX}/equipment/:id`,
+    authenticateJwt,
+    equipmentController.findById.bind(equipmentController)
+  );
 
   /**
    * @route POST /equipment
@@ -101,7 +118,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private (Admin only)
    */
   app.post(
-    '/',
+    `${API_PREFIX}/equipment`,
     authenticateJwt,
     // requireRole(['admin']),
     equipmentController.create.bind(equipmentController)
@@ -113,7 +130,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private (Admin only)
    */
   app.put(
-    '/:id',
+    `${API_PREFIX}/equipment/:id`,
     authenticateJwt,
     // requireRole(['admin']),
     equipmentController.update.bind(equipmentController)
@@ -125,7 +142,7 @@ export const setupEquipmentRoutes = (app: Application) => {
    * @access Private (Admin only)
    */
   app.delete(
-    '/:id',
+    `${API_PREFIX}/equipment/:id`,
     authenticateJwt,
     // requireRole(['admin']),
     equipmentController.delete.bind(equipmentController)

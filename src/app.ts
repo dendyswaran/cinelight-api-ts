@@ -7,6 +7,7 @@ import config from './config';
 // Import routes
 import { setupAuthRoutes } from '@interfaces/http/routes/authRoutes';
 import { setupEquipmentRoutes } from '@interfaces/http/routes/equipmentRoutes';
+import { setupBundleRoutes } from '@interfaces/http/routes/bundleRoutes';
 
 /**
  * Creates and configures an Express application
@@ -36,6 +37,12 @@ export const createApp = (): Application => {
   // API Routes
   setupAuthRoutes(app);
   setupEquipmentRoutes(app);
+
+  // Bundle routes
+  const bundleRouter = express.Router();
+  setupBundleRoutes(bundleRouter);
+  app.use('/bundles', bundleRouter);
+
   // app.use(`${API_PREFIX}/quotations`, quotationRoutes);
 
   // 404 Handler

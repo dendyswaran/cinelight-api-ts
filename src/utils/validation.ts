@@ -268,3 +268,109 @@ export function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
+
+/**
+ * Validates equipment bundle input
+ * @param input Bundle input data
+ * @param isUpdate Whether this is an update operation (some fields optional)
+ * @returns Array of validation errors, empty if valid
+ */
+export function validateBundleInput(input: any, isUpdate = false): ValidationError[] {
+  const errors: ValidationError[] = [];
+
+  // Name is required for create, optional for update
+  if (!isUpdate || input.name !== undefined) {
+    if (!input.name) {
+      errors.push({
+        field: 'name',
+        message: 'Bundle name is required'
+      });
+    } else if (typeof input.name !== 'string') {
+      errors.push({
+        field: 'name',
+        message: 'Bundle name must be a string'
+      });
+    }
+  }
+
+  // Price validation
+  if (!isUpdate || input.dailyRentalPrice !== undefined) {
+    if (input.dailyRentalPrice === undefined || input.dailyRentalPrice === null) {
+      errors.push({
+        field: 'dailyRentalPrice',
+        message: 'Daily rental price is required'
+      });
+    } else if (isNaN(parseFloat(input.dailyRentalPrice))) {
+      errors.push({
+        field: 'dailyRentalPrice',
+        message: 'Daily rental price must be a number'
+      });
+    } else if (parseFloat(input.dailyRentalPrice) < 0) {
+      errors.push({
+        field: 'dailyRentalPrice',
+        message: 'Daily rental price cannot be negative'
+      });
+    }
+  }
+
+  // Discount validation (optional)
+  if (input.discount !== undefined) {
+    if (isNaN(parseFloat(input.discount))) {
+      errors.push({
+        field: 'discount',
+        message: 'Discount must be a number'
+      });
+    } else if (parseFloat(input.discount) < 0 || parseFloat(input.discount) > 100) {
+      errors.push({
+        field: 'discount',
+        message: 'Discount must be between 0 and 100'
+      });
+    }
+  }
+
+  // Bundle items validation
+  if (!isUpdate || input.bundleItems !== undefined) {
+    if (!input.bundleItems || !Array.isArray(input.bundleItems)) {
+      errors.push({
+        field: 'bundleItems',
+        message: 'Bundle items must be an array'
+      });
+    } else if (input.bundleItems.length === 0) {
+      errors.push({
+        field: 'bundleItems',
+        message: 'Bundle must have at least one item'
+      });
+    } else {
+      // Validate each bundle item
+      input.bundleItems.forEach((item: any, index: number) => {
+        if (!item.equipmentId) {
+          errors.push({
+            field: `bundleItems[${index}].equipmentId`,
+            message: 'Equipment ID is required for bundle item'
+          });
+        } else if (isNaN(parseInt(item.equipmentId))) {
+          errors.push({
+            field: `bundleItems[${index}].equipmentId`,
+            message: 'Equipment ID must be a number'
+          });
+        }
+
+        if (item.quantity !== undefined && item.quantity !== null) {
+          if (isNaN(parseInt(item.quantity))) {
+            errors.push({
+              field: `bundleItems[${index}].quantity`,
+              message: 'Quantity must be a number'
+            });
+          } else if (parseInt(item.quantity) < 1) {
+            errors.push({
+              field: `bundleItems[${index}].quantity`,
+              message: 'Quantity must be at least 1'
+            });
+          }
+        }
+      });
+    }
+  }
+
+  return errors;
+}
