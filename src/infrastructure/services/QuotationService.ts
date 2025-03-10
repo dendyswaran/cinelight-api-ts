@@ -1,9 +1,8 @@
-import { Repository } from 'typeorm';
 import { Quotation, QuotationProps, QuotationStatus } from '@domain/entities/Quotation';
 import { QuotationItem } from '@domain/entities/QuotationItem';
 import { QuotationSection } from '@domain/entities/QuotationSection';
-import { AppDataSource } from '@infrastructure/database/data-source';
-import { PaginationOptions, PaginatedResult } from '@utils/pagination';
+import { PaginatedResult, PaginationOptions } from '@utils/pagination';
+import { Repository } from 'typeorm';
 
 export interface IQuotationService {
   createQuotation(quotationData: QuotationProps): Promise<Quotation>;
@@ -26,10 +25,14 @@ export class QuotationService implements IQuotationService {
   private sectionRepository: Repository<QuotationSection>;
   private itemRepository: Repository<QuotationItem>;
 
-  constructor() {
-    this.quotationRepository = AppDataSource.getRepository(Quotation);
-    this.sectionRepository = AppDataSource.getRepository(QuotationSection);
-    this.itemRepository = AppDataSource.getRepository(QuotationItem);
+  constructor(
+    quotationRepository: Repository<Quotation>,
+    sectionRepository: Repository<QuotationSection>,
+    itemRepository: Repository<QuotationItem>
+  ) {
+    this.quotationRepository = quotationRepository;
+    this.sectionRepository = sectionRepository;
+    this.itemRepository = itemRepository;
   }
 
   async createQuotation(quotationData: QuotationProps): Promise<Quotation> {

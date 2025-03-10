@@ -6,8 +6,9 @@ import config from './config';
 
 // Import routes
 import { setupAuthRoutes } from '@interfaces/http/routes/authRoutes';
-import { setupEquipmentRoutes } from '@interfaces/http/routes/equipmentRoutes';
 import { setupBundleRoutes } from '@interfaces/http/routes/bundleRoutes';
+import { setupEquipmentRoutes } from '@interfaces/http/routes/equipmentRoutes';
+import { setupQuotationRoutes } from '@interfaces/http/routes/quotationRoutes';
 
 /**
  * Creates and configures an Express application
@@ -38,8 +39,7 @@ export const createApp = (): Application => {
   setupAuthRoutes(app);
   setupEquipmentRoutes(app);
   setupBundleRoutes(app);
-
-  // app.use(`${API_PREFIX}/quotations`, quotationRoutes);
+  setupQuotationRoutes(app);
 
   // 404 Handler
   app.use((_req: Request, res: Response) => {

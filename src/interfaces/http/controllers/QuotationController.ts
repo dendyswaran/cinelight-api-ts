@@ -7,31 +7,33 @@ import { QuotationStatus } from '@domain/entities/Quotation';
 export class QuotationController {
   private quotationService: QuotationService;
 
-  constructor() {
-    this.quotationService = new QuotationService();
+  constructor(quotationService: QuotationService) {
+    this.quotationService = quotationService;
   }
 
   /**
    * Create a new quotation
    */
-  create = async (req: Request, res: Response): Promise<Response> => {
+  create = async (req: Request, res: Response): Promise<void> => {
     try {
       const quotationData = req.body;
 
       // Validate input
       const validationErrors = validateQuotationInput(quotationData);
       if (validationErrors.length > 0) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: 'Validation error',
           errorCode: 400,
           errors: validationErrors
         });
+
+        return;
       }
 
       const quotation = await this.quotationService.createQuotation(quotationData);
 
-      return res.status(201).json({
+      res.status(201).json({
         status: true,
         message: 'Quotation created successfully',
         data: quotation
@@ -39,7 +41,7 @@ export class QuotationController {
     } catch (error) {
       console.error('Create quotation error:', error);
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -50,12 +52,12 @@ export class QuotationController {
   /**
    * Get all quotations with pagination
    */
-  findAll = async (req: Request, res: Response): Promise<Response> => {
+  findAll = async (req: Request, res: Response): Promise<void> => {
     try {
       const paginationOptions = parsePaginationOptions(req.query);
       const paginatedQuotations = await this.quotationService.findAll(paginationOptions);
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Quotations retrieved successfully',
         data: paginatedQuotations.items,
@@ -64,7 +66,7 @@ export class QuotationController {
     } catch (error) {
       console.error('Get quotations error:', error);
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -75,20 +77,22 @@ export class QuotationController {
   /**
    * Get a specific quotation by ID
    */
-  findById = async (req: Request, res: Response): Promise<Response> => {
+  findById = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const quotation = await this.quotationService.findById(parseInt(id));
 
       if (!quotation) {
-        return res.status(404).json({
+        res.status(404).json({
           status: false,
           message: 'Quotation not found',
           errorCode: 404
         });
+
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Quotation retrieved successfully',
         data: quotation
@@ -96,7 +100,7 @@ export class QuotationController {
     } catch (error) {
       console.error('Get quotation error:', error);
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -107,7 +111,7 @@ export class QuotationController {
   /**
    * Update a quotation
    */
-  update = async (req: Request, res: Response): Promise<Response> => {
+  update = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const quotationData = req.body;
@@ -115,12 +119,14 @@ export class QuotationController {
       // Validate input
       const validationErrors = validateQuotationInput(quotationData, true);
       if (validationErrors.length > 0) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: 'Validation error',
           errorCode: 400,
           errors: validationErrors
         });
+
+        return;
       }
 
       const updatedQuotation = await this.quotationService.updateQuotation(
@@ -129,14 +135,16 @@ export class QuotationController {
       );
 
       if (!updatedQuotation) {
-        return res.status(404).json({
+        res.status(404).json({
           status: false,
           message: 'Quotation not found',
           errorCode: 404
         });
+
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Quotation updated successfully',
         data: updatedQuotation
@@ -144,7 +152,7 @@ export class QuotationController {
     } catch (error) {
       console.error('Update quotation error:', error);
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -155,20 +163,22 @@ export class QuotationController {
   /**
    * Delete a quotation
    */
-  delete = async (req: Request, res: Response): Promise<Response> => {
+  delete = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const deleted = await this.quotationService.deleteQuotation(parseInt(id));
 
       if (!deleted) {
-        return res.status(404).json({
+        res.status(404).json({
           status: false,
           message: 'Quotation not found',
           errorCode: 404
         });
+
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Quotation deleted successfully',
         data: null
@@ -176,7 +186,7 @@ export class QuotationController {
     } catch (error) {
       console.error('Delete quotation error:', error);
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -187,17 +197,19 @@ export class QuotationController {
   /**
    * Update quotation status
    */
-  updateStatus = async (req: Request, res: Response): Promise<Response> => {
+  updateStatus = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const { status } = req.body;
 
       if (!status || !Object.values(QuotationStatus).includes(status as QuotationStatus)) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: 'Invalid status value',
           errorCode: 400
         });
+
+        return;
       }
 
       const updatedQuotation = await this.quotationService.updateStatus(
@@ -206,14 +218,16 @@ export class QuotationController {
       );
 
       if (!updatedQuotation) {
-        return res.status(404).json({
+        res.status(404).json({
           status: false,
           message: 'Quotation not found',
           errorCode: 404
         });
+
+        return;
       }
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Quotation status updated successfully',
         data: updatedQuotation
@@ -221,7 +235,7 @@ export class QuotationController {
     } catch (error) {
       console.error('Update quotation status error:', error);
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -232,14 +246,14 @@ export class QuotationController {
   /**
    * Add an item to a quotation
    */
-  addItem = async (req: Request, res: Response): Promise<Response> => {
+  addItem = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const itemData = req.body;
 
       const item = await this.quotationService.addItem(parseInt(id), itemData);
 
-      return res.status(201).json({
+      res.status(201).json({
         status: true,
         message: 'Item added to quotation successfully',
         data: item
@@ -248,14 +262,14 @@ export class QuotationController {
       console.error('Add item error:', error);
 
       if (error instanceof Error) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: error.message,
           errorCode: 400
         });
       }
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -266,13 +280,13 @@ export class QuotationController {
   /**
    * Remove an item from a quotation
    */
-  removeItem = async (req: Request, res: Response): Promise<Response> => {
+  removeItem = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id, itemId } = req.params;
 
       const removed = await this.quotationService.removeItem(parseInt(id), parseInt(itemId));
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Item removed from quotation successfully',
         data: null
@@ -281,14 +295,14 @@ export class QuotationController {
       console.error('Remove item error:', error);
 
       if (error instanceof Error) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: error.message,
           errorCode: 400
         });
       }
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -299,14 +313,14 @@ export class QuotationController {
   /**
    * Add a section to a quotation
    */
-  addSection = async (req: Request, res: Response): Promise<Response> => {
+  addSection = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const sectionData = req.body;
 
       const section = await this.quotationService.addSection(parseInt(id), sectionData);
 
-      return res.status(201).json({
+      res.status(201).json({
         status: true,
         message: 'Section added to quotation successfully',
         data: section
@@ -315,14 +329,14 @@ export class QuotationController {
       console.error('Add section error:', error);
 
       if (error instanceof Error) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: error.message,
           errorCode: 400
         });
       }
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -333,13 +347,13 @@ export class QuotationController {
   /**
    * Remove a section from a quotation
    */
-  removeSection = async (req: Request, res: Response): Promise<Response> => {
+  removeSection = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id, sectionId } = req.params;
 
       const removed = await this.quotationService.removeSection(parseInt(id), parseInt(sectionId));
 
-      return res.status(200).json({
+      res.status(200).json({
         status: true,
         message: 'Section removed from quotation successfully',
         data: null
@@ -348,14 +362,14 @@ export class QuotationController {
       console.error('Remove section error:', error);
 
       if (error instanceof Error) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: error.message,
           errorCode: 400
         });
       }
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -366,7 +380,7 @@ export class QuotationController {
   /**
    * Export a quotation to PDF
    */
-  exportToPdf = async (req: Request, res: Response): Promise<Response | void> => {
+  exportToPdf = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const pdfBuffer = await this.quotationService.exportToPdf(parseInt(id));
@@ -374,19 +388,19 @@ export class QuotationController {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=quotation-${id}.pdf`);
 
-      return res.send(pdfBuffer);
+      res.send(pdfBuffer);
     } catch (error) {
       console.error('Export to PDF error:', error);
 
       if (error instanceof Error) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: error.message,
           errorCode: 400
         });
       }
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
@@ -397,7 +411,7 @@ export class QuotationController {
   /**
    * Export a quotation to Excel
    */
-  exportToExcel = async (req: Request, res: Response): Promise<Response | void> => {
+  exportToExcel = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const excelBuffer = await this.quotationService.exportToExcel(parseInt(id));
@@ -408,19 +422,19 @@ export class QuotationController {
       );
       res.setHeader('Content-Disposition', `attachment; filename=quotation-${id}.xlsx`);
 
-      return res.send(excelBuffer);
+      res.send(excelBuffer);
     } catch (error) {
       console.error('Export to Excel error:', error);
 
       if (error instanceof Error) {
-        return res.status(400).json({
+        res.status(400).json({
           status: false,
           message: error.message,
           errorCode: 400
         });
       }
 
-      return res.status(500).json({
+      res.status(500).json({
         status: false,
         message: 'Internal server error',
         errorCode: 500
