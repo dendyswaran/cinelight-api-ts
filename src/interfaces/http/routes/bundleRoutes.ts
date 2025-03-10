@@ -3,10 +3,11 @@ import { EquipmentBundleItem } from '@domain/entities/EquipmentBundleItem';
 import { DataSourceConfig } from '@infrastructure/database/data-source';
 import { EquipmentBundleService } from '@infrastructure/services/EquipmentBundleService';
 import { EquipmentBundleController } from '@interfaces/http/controllers/EquipmentBundleController';
-import { Router } from 'express';
+import { Application } from 'express';
 import { authenticateJwt } from '../middleware/auth';
+import { API_PREFIX } from '@infrastructure/config/constants';
 
-export const setupBundleRoutes = (router: Router) => {
+export const setupBundleRoutes = (app: Application) => {
   const dataSource = DataSourceConfig.getInstance();
   const bundleRepository = dataSource.getRepository(EquipmentBundle);
   const bundleItemRepository = dataSource.getRepository(EquipmentBundleItem);
@@ -19,28 +20,33 @@ export const setupBundleRoutes = (router: Router) => {
    * @desc Get all equipment bundles with pagination
    * @access Private
    */
-  // @ts-ignore - Express route handler type issue
-  router.get('/', authenticateJwt, (req, res) => bundleController.findAll(req, res));
+  app.get(
+    `${API_PREFIX}/bundles`,
+    authenticateJwt,
+    bundleController.findAll.bind(bundleController)
+  );
 
   /**
    * @route GET /bundles/:id
    * @desc Get a specific equipment bundle by ID
    * @access Private
    */
-  // @ts-ignore - Express route handler type issue
-  router.get('/:id', authenticateJwt, (req, res) => bundleController.findById(req, res));
+  app.get(
+    `${API_PREFIX}/bundles/:id`,
+    authenticateJwt,
+    bundleController.findById.bind(bundleController)
+  );
 
   /**
    * @route POST /bundles
    * @desc Create a new equipment bundle
    * @access Private (Admin only)
    */
-  router.post(
-    '/',
+  app.post(
+    `${API_PREFIX}/bundles`,
     authenticateJwt,
     // requireRole(['admin']),
-    // @ts-ignore - Express route handler type issue
-    (req, res) => bundleController.create(req, res)
+    bundleController.create.bind(bundleController)
   );
 
   /**
@@ -48,12 +54,11 @@ export const setupBundleRoutes = (router: Router) => {
    * @desc Update an equipment bundle
    * @access Private (Admin only)
    */
-  router.put(
-    '/:id',
+  app.put(
+    `${API_PREFIX}/bundles/:id`,
     authenticateJwt,
     // requireRole(['admin']),
-    // @ts-ignore - Express route handler type issue
-    (req, res) => bundleController.update(req, res)
+    bundleController.update.bind(bundleController)
   );
 
   /**
@@ -61,11 +66,10 @@ export const setupBundleRoutes = (router: Router) => {
    * @desc Delete an equipment bundle
    * @access Private (Admin only)
    */
-  router.delete(
-    '/:id',
+  app.delete(
+    `${API_PREFIX}/bundles/:id`,
     authenticateJwt,
     // requireRole(['admin']),
-    // @ts-ignore - Express route handler type issue
-    (req, res) => bundleController.delete(req, res)
+    bundleController.delete.bind(bundleController)
   );
 };

@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  JoinColumn
+  JoinColumn,
+  OneToMany
 } from 'typeorm';
 import { EquipmentCategory } from '@domain/entities/EquipmentCategory';
+import { EquipmentBundleItem } from './EquipmentBundleItem';
 
 export interface EquipmentProps {
   id?: number;
@@ -45,6 +47,9 @@ export class Equipment {
   @ManyToOne(() => EquipmentCategory)
   @JoinColumn({ name: 'categoryId' })
   category: EquipmentCategory;
+
+  @OneToMany(() => EquipmentBundleItem, (bundleItem: EquipmentBundleItem) => bundleItem.equipment)
+  bundleItems: EquipmentBundleItem[];
 
   @Column({ default: true })
   isActive: boolean;

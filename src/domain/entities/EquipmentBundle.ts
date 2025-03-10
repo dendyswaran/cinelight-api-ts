@@ -41,7 +41,7 @@ export class EquipmentBundle {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => EquipmentBundleItem, bundleItem => bundleItem.bundle, {
+  @OneToMany(() => EquipmentBundleItem, (bundleItem: EquipmentBundleItem) => bundleItem.bundle, {
     cascade: true
   })
   bundleItems: EquipmentBundleItem[];

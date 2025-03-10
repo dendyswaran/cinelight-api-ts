@@ -37,11 +37,7 @@ export const createApp = (): Application => {
   // API Routes
   setupAuthRoutes(app);
   setupEquipmentRoutes(app);
-
-  // Bundle routes
-  const bundleRouter = express.Router();
-  setupBundleRoutes(bundleRouter);
-  app.use('/bundles', bundleRouter);
+  setupBundleRoutes(app);
 
   // app.use(`${API_PREFIX}/quotations`, quotationRoutes);
 

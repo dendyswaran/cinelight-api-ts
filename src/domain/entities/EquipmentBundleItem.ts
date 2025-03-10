@@ -35,11 +35,11 @@ export class EquipmentBundleItem {
   @Column({ default: 1 })
   quantity: number;
 
-  @ManyToOne(() => EquipmentBundle, bundle => bundle.bundleItems)
+  @ManyToOne(() => EquipmentBundle, (bundle: EquipmentBundle) => bundle.bundleItems)
   @JoinColumn({ name: 'bundleId' })
   bundle: EquipmentBundle;
 
-  @ManyToOne(() => Equipment)
+  @ManyToOne(() => Equipment, (equipment: Equipment) => equipment.bundleItems)
   @JoinColumn({ name: 'equipmentId' })
   equipment: Equipment;
 
